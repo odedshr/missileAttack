@@ -133,6 +133,9 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
         startGame : function startGame () {
             var that = this;
             this.dWrapper.className += " playing";
+            this.wrapperHeight = that.dWrapper.offsetHeight;
+            this.wrapperWidth = that.dWrapper.offsetWidth;
+            this.wrapperWidthPadding = that.wrapperWidth*0.05;
             window.setTimeout(function () {
                 that.isPlaying = true;
             },1000);
@@ -145,11 +148,6 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             this.dWrapper = document.getElementById(wrapperName);
             this.dWrapper.className += "missileAttack";
             this.dWrapper.onclick = this.shootPatriot.bind(that);
-            window.setTimeout(function () {
-                that.wrapperHeight = that.dWrapper.offsetHeight;
-                that.wrapperWidth = that.dWrapper.offsetWidth;
-                that.wrapperWidthPadding = that.wrapperWidth*0.05;
-            },100);
             this.dScore = document.createElement("input");
             this.dScore.setAttribute("type","number");
             this.dScore.setAttribute("readonly","readonly");
