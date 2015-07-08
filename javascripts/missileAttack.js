@@ -121,7 +121,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                         }
                     });
                     if (Math.random()*this.missileRate > 0.97) {
-                        //this.shootMissile();
+                        this.shootMissile();
                     }
                 }
             }
