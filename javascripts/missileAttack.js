@@ -1,14 +1,16 @@
 var MissileAttack = MissileAttack || (function missleAttackClosure () {
     return {
         dWrapper : false,
+        dBuildings : false,
         dScore : false,
         wrapperWidth : 0,
         wrapperHeight : 0,
-        missileSpeed : 0.01,
-        patriotStep: 20,
-        missileRate : 1,
+        missileSpeed : 0.01, //=100 ticks for missile to hit
+        patriotStep: 20, //=20px diagonally
+        missileRate : 97,
         missileId: 0,
         patriotId : 0,
+        buildings: [],
         missiles : [],
         patriots : [],
         explosions : [],
@@ -91,18 +93,15 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                         patriot.elm.style.top = patriot.y+"px";
                         patriot.elm.style.left = patriot.x+"px";
                         if (patriot.y <= patriot.toY) {
-                           if (that.dWrapper.removeChild(patriot.elm)) {
-                               that.patriots.splice(index,1);
-                               that.explode(patriot.x,patriot.y);
-                           } else {
-                               alert ("problem");
-                           }
+                            that.dWrapper.removeChild(patriot.elm);
+                            that.patriots.splice(index,1);
+                            that.explode(patriot.x,patriot.y);
                         }
                     });
                     this.explosions.forEach(function perExplosion(explosion,index) {
                         if (--explosion.t == 0) {
                             that.dWrapper.removeChild(explosion.elm);
-                            that.patriots.splice(index,1);
+                            that.explosions.splice(index,1);
                         }
                     });
                     this.missiles.forEach(function perMissile (missile) {
@@ -116,11 +115,20 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                                 that.removeMissile.call(that,missile);
                             }
                         });
+                        if (that.isIntersects(missile.elm,that.dBuildings)) {
+                            that.buildings.forEach(function perBuilding (building,index) {
+                                if (that.isIntersects(missile.elm,building)) { //note I'm sending building and not building.elm
+                                    building.elm.className = "building burned";
+                                    that.buildings.splice(index,1);
+                                    that.removeMissile.call(that,missile);
+                                }
+                            });
+                        }
                         if (missile.y > that.wrapperHeight) {
                             that.removeMissile.call(that,missile);
                         }
                     });
-                    if (Math.random()*this.missileRate > 0.97) {
+                    if (Math.random()*this.missileRate > 95) {
                         this.shootMissile();
                     }
                 }
@@ -131,11 +139,37 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             }
         },
         startGame : function startGame () {
-            var that = this;
+            var that = this,
+                totalBuildingsWidth = 0;
             this.dWrapper.className += " playing";
             this.wrapperHeight = that.dWrapper.offsetHeight;
             this.wrapperWidth = that.dWrapper.offsetWidth;
             this.wrapperWidthPadding = that.wrapperWidth*0.05;
+            //TODO: remove previous building
+            var newBuildings = "",
+                buildingCount = 0;
+            while (totalBuildingsWidth < this.wrapperWidth) {
+                var buildingHeight = parseInt(this.wrapperHeight*(0.1+((Math.random()*0.1)))),
+                    buildingWidth = parseInt(this.wrapperWidth*(0.1+((Math.random()*0.1))));
+                if ((totalBuildingsWidth+buildingWidth)>this.wrapperWidth) {
+                    buildingWidth = this.wrapperWidth - totalBuildingsWidth;
+                }
+                totalBuildingsWidth += buildingWidth;
+                newBuildings += "<li id='building-"+(++buildingCount)+"' class='building' style='height:"+buildingHeight+"px;width:"+buildingWidth+"px'></li>";
+            }
+            this.dBuildings.innerHTML = newBuildings;
+            this.buildings = [];
+            var buildTopOffset = this.dBuildings.offsetTop + this.dBuildings.clientHeight;
+            while (buildingCount) {
+                var dElm = document.getElementById("building-"+buildingCount--);
+                this.buildings.push({
+                    elm:dElm,
+                    clientHeight: dElm.clientHeight,
+                    clientWidth: dElm.clientWidth,
+                    offsetLeft: dElm.offsetLeft,
+                    offsetTop: buildTopOffset - dElm.clientHeight + dElm.offsetTop
+                });
+            }
             window.setTimeout(function () {
                 that.isPlaying = true;
             },1000);
@@ -160,6 +194,10 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             dElement.innerHTML = "<span>PLAY!</span>";
             dElement.onclick = this.startGame.bind(this);
             this.dWrapper.appendChild(dElement);
+
+            this.dBuildings = document.createElement("ul");
+            this.dBuildings.className = "buildings";
+            this.dWrapper.appendChild(this.dBuildings);
         },
         initCSS : function initCSS () {
             var cssId = 'missleAttackCSS';  // you could encode the css path itself to generate id..
