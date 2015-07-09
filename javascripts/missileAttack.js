@@ -121,6 +121,10 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                                     building.elm.className = "building burned";
                                     that.buildings.splice(index,1);
                                     that.removeMissile.call(that,missile);
+                                    if (that.buildings.length==0) {
+                                        that.endGame.call(that);
+
+                                    }
                                 }
                             });
                         }
@@ -174,6 +178,20 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                 that.isPlaying = true;
             },1000);
 
+        },
+        endGame : function endGame () {
+            var that = this;
+            this.patriots.forEach(function perPatriot(patriot) {
+                that.dWrapper.removeChild(patriot);
+            });
+            this.patriots = [];
+            this.missiles.forEach(function perPatriot(missile) {
+                that.dWrapper.removeChild(missile);
+            });
+            this.missiles = [];
+            alert ("Game over!");
+            this.isPlaying = false;
+            this.dWrapper.className = this.dWrapper.className.replace(/ playing/,"");
         },
         init : function init (wrapperName) {
             var that = this;
