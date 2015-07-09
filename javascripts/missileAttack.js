@@ -27,10 +27,13 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             this.missiles.push(missile);
             dElement.className = "missile";
             dElement.id = "missile-"+missileId;
+            dElement.style.top = 0;
+            dElement.style.left = missile.fromX +"px";
+            dElement.style.transform = "rotate("+(Math.atan2(missile.fromX-missile.toX,this.wrapperHeight))+"rad)";
             this.dWrapper.appendChild(dElement);
             missile.elm = dElement;
-            missile.elm.style.top = 0;
-            missile.elm.style.left = missile.fromX +"px";
+
+
         },
         removeMissile: function removeMissile (missle) {
             this.dWrapper.removeChild(missle.elm);
