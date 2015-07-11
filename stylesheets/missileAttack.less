@@ -1,5 +1,5 @@
 .missileAttack {
-  border:0.1rem solid blue;
+  background: url(../images/background.gif) no-repeat center bottom;
   height: 30rem;
   overflow: hidden;
   position: relative;
@@ -22,6 +22,7 @@
 
 .score {
   background: transparent;
+  color: white;
   border: none;
   float: right;
   text-align: right;
@@ -41,19 +42,42 @@
 }
 
 .building {
-  background-color: green;
+  background-repeat: repeat, no-repeat;
+  border-top:0.1rem solid darkblue;
   display:inline-block;
-  margin: 0;
+  margin: -0.5rem 0 0 0;
   padding:0;
 }
 
+.building1  { background-image: url(../images/window.png), url(../images/brick1.jpeg); }
+.building2  { background-image: url(../images/window.png), url(../images/brick2.jpeg); }
+.building3  { background-image: url(../images/window.png), url(../images/brick3.jpeg); }
+.building4  { background-image: url(../images/window.png), url(../images/brick4.jpeg); }
+.building5  { background-image: url(../images/window.png), url(../images/brick5.jpeg); }
+.building6  { background-image: url(../images/window.png), url(../images/wall1.jpeg); }
+.building7  { background-image: url(../images/window.png), url(../images/wall2.jpeg); }
+.building8  { background-image: url(../images/window.png), url(../images/wall3.jpeg); }
+.building9  { background-image: url(../images/window.png), url(../images/wall4.jpeg); }
+.building10 { background-image: url(../images/window.png), url(../images/wall5.jpeg); }
+
+.burned.building1  { background-image: url(../images/fire1.png), url(../images/window.png), url(../images/brick1.jpeg);}
+.burned.building2  { background-image: url(../images/fire2.png), url(../images/window.png), url(../images/brick2.jpeg);}
+.burned.building3  { background-image: url(../images/fire3.png), url(../images/window.png), url(../images/brick3.jpeg);}
+.burned.building4  { background-image: url(../images/fire4.png), url(../images/window.png), url(../images/brick4.jpeg);}
+.burned.building5  { background-image: url(../images/fire5.png), url(../images/window.png), url(../images/brick5.jpeg);}
+.burned.building6  { background-image: url(../images/fire6.png), url(../images/window.png), url(../images/wall1.jpeg); }
+.burned.building7  { background-image: url(../images/fire7.png), url(../images/window.png), url(../images/wall2.jpeg); }
+.burned.building8  { background-image: url(../images/fire8.png), url(../images/window.png), url(../images/wall3.jpeg); }
+.burned.building9  { background-image: url(../images/fire9.png), url(../images/window.png), url(../images/wall4.jpeg); }
+.burned.building10 { background-image: url(../images/fire10.png),url(../images/window.png), url(../images/wall5.jpeg); }
+
 .building.burned {
-  background-color: yellow;
+  background-repeat: no-repeat, repeat, no-repeat;
+  background-position: bottom center;
 }
 
 .missile {
-  background-image: url(../images/missile.png);
-  border-radius: 0.5rem;
+  background: url(../images/missile.png) no-repeat;
   position: absolute;
   height: 1rem;
   width: 0.75rem;
@@ -62,12 +86,11 @@
 .target {}
 
 .patriot {
-  background-color: blue;
-  border-radius: 0.5rem;
+  background: url(../images/patriot.png) no-repeat;
   position: absolute;
   margin: -0.5rem 0 0 -0.5rem;
   height: 1rem;
-  width: 1rem;
+  width: 0.75rem;
 }
 
 @keyframes explosion-animation {
@@ -90,10 +113,17 @@
 .explosion {
   animation-name: explosion-animation;
   animation-duration: 2s;
-  background-color: orange;
+  background: url(../images/animated-bubbling-fire.gif) no-repeat center center;
+  background-size: 5rem 5rem;
   position: absolute;
   height: 1rem;
   width: 1rem;
+
+  -webkit-filter: blur(2px);
+  -moz-filter: blur(2px);
+  -o-filter: blur(2px);
+  -ms-filter: blur(2px);
+  filter: blur(2px);
 }
 
 .score {}

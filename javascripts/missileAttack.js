@@ -58,10 +58,11 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                 this.patriots.push(patriot);
                 dElement.className = "patriot";
                 dElement.id = "patriot-"+patriotId;
+                dElement.style.transform = "rotate("+(Math.atan2(distanceX,distanceY))+"rad)";
+                dElement.style.top = patriot.y +"px";
+                dElement.style.left = "0px";
                 this.dWrapper.appendChild(dElement);
                 patriot.elm = dElement;
-                patriot.elm.style.top = patriot.y +"px";
-                patriot.elm.style.left = "0px";
             }
         },
         explode : function explode (x, y) {
@@ -121,7 +122,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                         if (that.isIntersects(missile.elm,that.dBuildings)) {
                             that.buildings.forEach(function perBuilding (building,index) {
                                 if (that.isIntersects(missile.elm,building)) { //note I'm sending building and not building.elm
-                                    building.elm.className = "building burned";
+                                    building.elm.className += " burned";
                                     that.buildings.splice(index,1);
                                     that.removeMissile.call(that,missile);
                                     if (that.buildings.length==0) {
@@ -145,16 +146,11 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                 console.log(err);
             }
         },
-        startGame : function startGame () {
-            var that = this,
-                totalBuildingsWidth = 0;
-            this.dWrapper.className += " playing";
-            this.wrapperHeight = that.dWrapper.offsetHeight;
-            this.wrapperWidth = that.dWrapper.offsetWidth;
-            this.wrapperWidthPadding = that.wrapperWidth*0.05;
-            //TODO: remove previous building
+        addBuildings : function addBuildings () {
             var newBuildings = "",
-                buildingCount = 0;
+                buildingCount = 0,
+                totalBuildingsWidth = 0;
+
             while (totalBuildingsWidth < this.wrapperWidth) {
                 var buildingHeight = parseInt(this.wrapperHeight*(0.1+((Math.random()*0.1)))),
                     buildingWidth = parseInt(this.wrapperWidth*(0.1+((Math.random()*0.1))));
@@ -162,7 +158,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                     buildingWidth = this.wrapperWidth - totalBuildingsWidth;
                 }
                 totalBuildingsWidth += buildingWidth;
-                newBuildings += "<li id='building-"+(++buildingCount)+"' class='building' style='height:"+buildingHeight+"px;width:"+buildingWidth+"px'></li>";
+                newBuildings += "<li id='building-"+(++buildingCount)+"' class='building building"+(1+parseInt(Math.random()*10))+"' style='height:"+buildingHeight+"px;width:"+buildingWidth+"px'></li>";
             }
             this.dBuildings.innerHTML = newBuildings;
             this.buildings = [];
@@ -177,6 +173,15 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                     offsetTop: buildTopOffset - dElm.clientHeight + dElm.offsetTop
                 });
             }
+        },
+        startGame : function startGame () {
+            var that = this;
+            this.dWrapper.className += " playing";
+            this.wrapperHeight = that.dWrapper.offsetHeight;
+            this.wrapperWidth = that.dWrapper.offsetWidth;
+            this.wrapperWidthPadding = that.wrapperWidth*0.05;
+            this.addBuildings();
+
             window.setTimeout(function () {
                 that.isPlaying = true;
             },1000);
