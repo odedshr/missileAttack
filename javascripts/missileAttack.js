@@ -2,7 +2,8 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
     return {
         dWrapper : false,
         dBuildings : false,
-        dScore : false,
+        dHits : false,
+        dAccuracy : false,
         wrapperWidth : 0,
         wrapperHeight : 0,
         missileSpeed : 0.01, //=100 ticks for missile to hit
@@ -14,6 +15,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
         missiles : [],
         patriots : [],
         explosions : [],
+        oStats : { iMissiles : 0, iPatriots : 0, iHits : 0},
         isPlaying : false,
         shootMissile : function shootMissile() {
             var missileId = this.missileId++,
@@ -32,8 +34,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             dElement.style.transform = "rotate("+(Math.atan2(missile.fromX-missile.toX,this.wrapperHeight))+"rad)";
             this.dWrapper.appendChild(dElement);
             missile.elm = dElement;
-
-
+            this.oStats.iMissiles++;
         },
         removeMissile: function removeMissile (missle) {
             this.dWrapper.removeChild(missle.elm);
@@ -63,6 +64,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                 dElement.style.left = "0px";
                 this.dWrapper.appendChild(dElement);
                 patriot.elm = dElement;
+                this.oStats.iPatriots++;
             }
         },
         explode : function explode (x, y) {
@@ -115,8 +117,8 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                         missile.elm.style.left = missile.x+"px";
                         that.explosions.forEach(function perExplosion(explosion) {
                             if (that.isIntersects(missile.elm,explosion.elm)) {
-                                that.dScore.value = +that.dScore.value + 1;
                                 that.removeMissile.call(that,missile);
+                                that.oStats.iHits++;
                             }
                         });
                         if (that.isIntersects(missile.elm,that.dBuildings)) {
@@ -139,6 +141,8 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                     if (Math.random()*this.missileRate > 95) {
                         this.shootMissile();
                     }
+                    this.dHits.value = this.oStats.iHits;
+                    this.dAccuracy.value = (this.oStats.iHits / this.oStats.iPatriots).toFixed(2);
                 }
             }
             catch (err) {
@@ -182,6 +186,11 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             this.wrapperWidthPadding = that.wrapperWidth*0.05;
             this.addBuildings();
 
+            this.oStats = {
+                iMissiles : 0,
+                iPatriots : 0,
+                iHits : 0
+            };
             window.setTimeout(function () {
                 that.isPlaying = true;
             },1000);
@@ -202,20 +211,23 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             this.dWrapper.className = this.dWrapper.className.replace(/ playing/,"");
         },
         init : function init (wrapperName) {
-            var that = this;
+            var that = this,
+                dElement;
             this.initCSS();
             window.setInterval(this.onIdle.bind(this), 50);
             this.dWrapper = document.getElementById(wrapperName);
             this.dWrapper.className += "missileAttack";
             this.dWrapper.onclick = this.shootPatriot.bind(that);
-            this.dScore = document.createElement("input");
-            this.dScore.setAttribute("type","number");
-            this.dScore.setAttribute("readonly","readonly");
-            this.dScore.value = 0;
-            this.dScore.className = "score";
-            this.dWrapper.appendChild(this.dScore);
 
-            var dElement = document.createElement("button");
+            dElement  = document.createElement("ul");
+            dElement.className = "stats";
+            dElement.innerHTML = '<li class="stat hits"><label for="hits" class="stat-label">Hits</label><input type="number" readonly="readonly" class="stat-value" name="hits" id="hits"/></li>'+
+                                 '<li class="stat accuracy"><label for="accuracy" class="stat-label">Accuracy</label><input type="number" readonly="readonly" class="stat-value" id="accuracy" name="accuracy"/></li>';
+            this.dWrapper.appendChild(dElement);
+            this.dHits = document.getElementById("hits");
+            this.dAccuracy = document.getElementById("accuracy");
+
+            dElement = document.createElement("button");
             dElement.className = "btnPlay";
             dElement.innerHTML = "<span>PLAY!</span>";
             dElement.onclick = this.startGame.bind(this);
