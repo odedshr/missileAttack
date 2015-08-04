@@ -8,6 +8,7 @@
 
 .playing {
   .btnPlay { display: none; }
+  .turret { display: block; }
 }
 .btnPlay {
   background-color: white;
@@ -30,6 +31,7 @@
   position: absolute;
   float: right;
   width: 101%;
+  z-index: 10;
 }
 
 .building {
@@ -72,6 +74,7 @@
   position: absolute;
   height: 1rem;
   width: 0.75rem;
+  z-index: 30;
 }
 
 .target {}
@@ -82,6 +85,7 @@
   margin: -0.5rem 0 0 -0.5rem;
   height: 1rem;
   width: 0.75rem;
+  z-index: 20;
 }
 
 @keyframes explosion-animation {
@@ -143,4 +147,110 @@
 .stats .accuracy:after {
   color: lightgreen;
   content: "%";
+}
+
+.turret {
+  bottom: 0;
+  display: none;
+  height: 2rem;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  z-index: 90;
+  width: 4rem;
+  margin-left: -2rem;
+}
+
+.turret-base {
+  background: url(../images/turret-base.png) no-repeat center bottom;
+  height: 1.5rem;
+  position: absolute;
+  width: 100%;
+  margin-top: -3.5rem;
+}
+.cannon {
+  background: url(../images/cannon.png) no-repeat center top;
+  height:4rem;
+  margin: 0 auto;
+  width:0.5rem;
+}
+@media (orientation: portrait) {
+  .missileAttack:before {
+    content: "Please rotate the screen";
+  }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
+  .missileAttack:before {
+    content: "Screen not wide enough";
+  }
+}
+@media (max-width: 480px), (orientation: portrait) {
+  #main_content {
+    padding: 0;
+  }
+  .missileAttack {
+    width:100%;
+  }
+  .missileAttack:before {
+    color: #fff;
+    font-size: 1.5rem;
+    text-align: center;
+    display: block;
+    margin-top: 10rem;
+  }
+
+  .stats, .btnPlay {
+    display: none;
+  }
+}
+
+@media (max-width:640px) {
+  #main_content {
+    padding: 0;
+  }
+}
+
+@media (max-height: 480px) {
+  #header_wrap .inner {
+    padding: 0 0 0 1rem;
+  }
+  #project_title {
+    font-size:2rem;
+  }
+  #project_tagline {
+    display: inline-block;
+    font-size:1rem;
+  }
+  #downloads {
+    bottom: auto;
+    top:2rem;
+  }
+}
+
+@media (min-width: 480px) and (max-width:640px) {
+  .missileAttack {
+    height: 14rem;
+  }
+
+  .btnPlay {
+    margin-top: 5rem;
+  }
+
+  .buildings {
+    height: 2rem;
+  }
+
+  #footer_wrap .inner {
+    padding: 0.5rem;
+
+    p {
+      display: inline;
+      margin: 0;
+    }
+    p:not(:first-child):before {
+      content: "|";
+      margin: 0 1rem;
+    }
+  }
 }

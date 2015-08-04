@@ -2,6 +2,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
     return {
         dWrapper : false,
         dBuildings : false,
+        dCannon : false,
         dHits : false,
         dAccuracy : false,
         wrapperWidth : 0,
@@ -41,15 +42,15 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             this.missiles.splice(this.missiles.indexOf(missle),1);
         },
         shootPatriot : function shootPatriot (ev) {
-            if (this.isPlaying) {
-                var distanceX = ev.layerX,
+            if (this.isPlaying && (ev.path.indexOf(this.dBuildings)==-1)) {
+                var distanceX =ev.layerX -  (this.wrapperWidth/2),
                     distanceY = this.wrapperHeight - ev.layerY,
                     angle = Math.atan2(distanceY,distanceX);
                 var patriotId = this.patriotId++,
                     dElement = document.createElement("DIV"),
                     patriot = {
                         id: patriotId,
-                        x: 0,
+                        x:  (this.wrapperWidth/2),
                         toX: ev.layerX,
                         toY: ev.layerY,
                         y: this.wrapperHeight,
@@ -89,7 +90,21 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                 (dElm1.offsetLeft > (dElm2.offsetLeft + dElm2.clientWidth))
             );
         },
-        onIdle : function onIdle () {
+        updateCannonRotation : function updateCannonRotation (ev) {
+            if ((ev.path.indexOf(this.dWrapper)>-1) && (ev.path.indexOf(this.dBuildings)==-1)) {
+                var distanceX =ev.layerX -  (this.wrapperWidth/2),
+                    distanceY = this.wrapperHeight - ev.layerY;
+
+                this.dCannon.style.transform = "rotate("+(Math.atan2(distanceX,distanceY))+"rad)";
+            }
+        },
+
+        updateStats : function updateStats (ev) {
+            this.dHits.value = this.oStats.iHits;
+            this.dAccuracy.value = (this.oStats.iHits / this.oStats.iPatriots).toFixed(2);
+        },
+
+        onIdle : function onIdle (ev) {
             try {
                 var that = this;
                 if (this.isPlaying) {
@@ -141,8 +156,7 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
                     if (Math.random()*this.missileRate > 95) {
                         this.shootMissile();
                     }
-                    this.dHits.value = this.oStats.iHits;
-                    this.dAccuracy.value = (this.oStats.iHits / this.oStats.iPatriots).toFixed(2);
+                    this.updateStats(ev);
                 }
             }
             catch (err) {
@@ -199,11 +213,11 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
         endGame : function endGame () {
             var that = this;
             this.patriots.forEach(function perPatriot(patriot) {
-                that.dWrapper.removeChild(patriot);
+                that.dWrapper.removeChild(patriot.elm);
             });
             this.patriots = [];
-            this.missiles.forEach(function perPatriot(missile) {
-                that.dWrapper.removeChild(missile);
+            this.missiles.forEach(function perMissle(missile) {
+                that.dWrapper.removeChild(missile.elm);
             });
             this.missiles = [];
             alert ("Game over!");
@@ -232,6 +246,13 @@ var MissileAttack = MissileAttack || (function missleAttackClosure () {
             dElement.innerHTML = "<span>PLAY!</span>";
             dElement.onclick = this.startGame.bind(this);
             this.dWrapper.appendChild(dElement);
+
+            dElement = document.createElement("div");
+            dElement.className = "turret";
+            dElement.innerHTML = '<div id="cannon" class="cannon"></div><div class="turret-base"></div>';
+            this.dWrapper.appendChild(dElement);
+            this.dCannon = document.getElementById("cannon");
+            document.onmousemove = this.updateCannonRotation.bind(this);
 
             this.dBuildings = document.createElement("ul");
             this.dBuildings.className = "buildings";
